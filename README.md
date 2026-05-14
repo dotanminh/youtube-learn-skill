@@ -8,7 +8,7 @@
 
 ## 🤔 Tại sao cần skill này?
 
-Hầu hết công cụ AI đều **tóm tắt** video YouTube. Tóm tắt thì rẻ - ai cũng có thể lấy bullet points.
+Hầu hết công cụ AI đều **tóm tắt** video YouTube. Nhưng tóm tắt thì ai cũng làm được - chỉ cần copy bullet points là xong.
 
 **Belief Archaeology** (Khảo cổ Niềm tin) khác hoàn toàn. Nó coi mỗi transcript như một **di chỉ khảo cổ** - nội dung bề mặt (những gì speaker nói) chỉ là lớp đất phủ. Kho báu thực sự nằm bên dưới: **worldview, giả định, và mô hình tư duy** chi phối mọi hành động và lời nói của speaker.
 
