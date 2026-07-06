@@ -1,24 +1,24 @@
-# Worldview: [Short Name]
+# Worldview: [Tên ngắn gọn]
 
-## Source
-- **Speaker:** [name]
+## Nguồn gốc
+- **Speaker:** [tên]
 - **Video:** [title](url)
-- **Analysis date:** YYYY-MM-DD
+- **Ngày phân tích:** YYYY-MM-DD
 
-## Analysis
+## Phân tích
 
-| Dimension | Content |
-|-----------|---------|
-| 📍 Phenomenon | ... |
-| 💡 Hidden Belief | ... |
-| ✅ Works When | ... |
-| ❌ Fails When | ... |
-| 🎯 Apply To Me | ... |
+| Mục | Nội dung |
+|-----|----------|
+| 📍 Hiện tượng | ... |
+| 💡 Niềm tin ẩn | ... |
+| ✅ Đúng khi | ... |
+| ❌ Sai khi | ... |
+| 🎯 Áp dụng cho Minh | ... |
 
 ## Vault Check
-- **Status:** 🟢 Reinforces / 🔴 Contradicts / 🟡 Extends / 🔵 Completely new
-- **Related KI:** ...
-- **Cross-reference notes:** ...
+- **Trạng thái:** 🟢 Củng cố / 🔴 Mâu thuẫn / 🟡 Mở rộng / 🔵 Hoàn toàn mới
+- **KI liên quan:** ...
+- **Ghi chú đối chiếu:** ...
 
-## Personal Notes
-(Add after internalizing)
+## Ghi chú cá nhân
+(User thêm sau khi internalize)

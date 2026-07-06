@@ -9,7 +9,6 @@ Usage:
 Examples:
   python fetch_transcript.py dQw4w9WgXcQ
   python fetch_transcript.py https://www.youtube.com/watch?v=dQw4w9WgXcQ transcript.txt
-  python fetch_transcript.py https://youtu.be/dQw4w9WgXcQ output/transcript.txt
 """
 import urllib.request
 import re
@@ -18,8 +17,7 @@ import json
 from youtube_transcript_api import YouTubeTranscriptApi
 
 # Fix Windows console encoding for Vietnamese/Unicode output
-if sys.platform == 'win32':
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
 
 def extract_video_id(input_str):
