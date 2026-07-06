@@ -1,8 +1,8 @@
-# 🏛️ YouTube-Learn: Belief Archaeology
+# 🏛️ YouTube-Learn: Multimodal Belief Archaeology
 
-> **Skill dành cho AI Agent - đào sâu worldview (thế giới quan) và niềm tin ẩn của speaker thay vì chỉ tóm tắt nội dung video YouTube.**
+> **Skill dành cho AI Agent - đào sâu thế giới quan (worldview), niềm tin ẩn và trực quan slide bài giảng của speaker thay vì chỉ tóm tắt nội dung video YouTube.**
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue)
+![Version](https://img.shields.io/badge/version-4.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Antigravity%20%7C%20Gemini%20CLI-purple)
 
@@ -10,28 +10,27 @@
 
 Hầu hết công cụ AI đều **tóm tắt** video YouTube. Nhưng tóm tắt thì ai cũng làm được - chỉ cần copy bullet points là xong.
 
-**Belief Archaeology** (Khảo cổ Niềm tin) khác hoàn toàn. Nó coi mỗi transcript như một **di chỉ khảo cổ** - nội dung bề mặt (những gì speaker nói) chỉ là lớp đất phủ. Kho báu thực sự nằm bên dưới: **worldview, giả định, và mô hình tư duy** chi phối mọi hành động và lời nói của speaker.
+**Belief Archaeology** (Khảo cổ Niềm tin) khác hoàn toàn. Nó coi mỗi transcript và khung hình slide như một **di chỉ khảo cổ** - nội dung bề mặt chỉ là lớp đất phủ. Kho báu thực sự nằm bên dưới: **worldview, giả định, và mô hình tư duy** chi phối mọi hành động và lời nói của speaker.
 
-### So sánh: Tóm tắt vs. Belief Archaeology
+---
 
-| Cách tiếp cận | Output | Độ sâu |
-|---------------|--------|--------|
-| Tóm tắt | "Speaker nói X, Y, Z" | Bề mặt |
-| **Belief Archaeology** | "Speaker **tin rằng** A, điều đó khiến họ làm X. Niềm tin này đúng khi B, sai khi C, và bạn có thể áp dụng bằng cách D." | Chiều sâu |
+## ✨ Tính năng mới trên Phiên bản 4.0.0
 
-## ✨ Tính năng chính
+- **Phân tích Đa phương tiện (Multimodal Analysis):** Tự động tải video chất lượng tối ưu và cắt các khung hình tĩnh (frames) chia đều theo thời lượng để AI Agent có thể trực tiếp quan sát và đọc chữ trên các slide bài giảng.
+- **Quản lý Speaker Profile tập trung:** Chuyển đổi từ cấu trúc file `speaker.md` cục bộ trong từng video sang quản lý tập trung tại thư mục `speakers/` dùng chung, giúp tích lũy và cập nhật thông tin người chia sẻ xuyên suốt nhiều video.
+- **QA Tự động hóa (Automated Quality Gate):** Tích hợp script `verify_output.py` kiểm tra cấu trúc thư mục, tệp tin bắt buộc, sự nhất quán của bảng chỉ mục index và đối chiếu thực tế thay vì để Agent tự đánh giá cảm tính.
+- **Tối ưu hóa YouTube Live:** Hỗ trợ nhận diện và xử lý các đường dẫn dạng phát trực tiếp (YouTube Live).
 
-- **Pipeline 8 Phase** - có cấu trúc, lặp lại được, kiểm soát chất lượng
-- **Tự động lấy Transcript** - hỗ trợ tiếng Việt, tiếng Anh, và 50+ ngôn ngữ qua `youtube-transcript-api`
-- **Chân dung Speaker** - nghiên cứu CON NGƯỜI, không chỉ lời nói
-- **Trích xuất Worldview** - tối đa 3 niềm tin cốt lõi mỗi video, phân tích 5 chiều
-- **Đối chiếu Knowledge Base** - so sánh phát hiện mới với kiến thức đã có
-- **QA Checklist** - 9 tiêu chí kiểm tra chất lượng, không được bỏ qua
+---
 
-## 📦 Cài đặt
+## 📦 Yêu cầu & Cài đặt
 
-### Dành cho người dùng Antigravity / Gemini CLI
+### 1. Công cụ hệ thống
+Skill yêu cầu các công cụ xử lý media sau được cài đặt và thêm vào biến môi trường hệ thống (`PATH`):
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) - Tải video/audio từ YouTube.
+- [ffmpeg](https://ffmpeg.org/) - Trích xuất các khung hình tĩnh từ video.
 
+### 2. Dành cho người dùng Antigravity / Gemini CLI
 Copy folder skill vào thư mục skills:
 
 ```bash
@@ -46,125 +45,88 @@ xcopy /E /I youtube-learn-skill "%USERPROFILE%\.gemini\antigravity\skills\youtub
 cp -r youtube-learn-skill ~/.gemini/antigravity/skills/youtube-learn
 ```
 
-### Cài thư viện phụ thuộc
-
+### 3. Cài đặt các thư viện Python
 ```bash
-pip install youtube-transcript-api
+pip install -r resources/requirements.txt
 ```
 
-> Yêu cầu `youtube-transcript-api` phiên bản 1.2.4 trở lên.
+---
 
 ## 🚀 Cách sử dụng
 
 ### Bắt đầu nhanh
-
 Chia sẻ link YouTube với AI agent và nói:
-
 ```
 youtube-learn https://www.youtube.com/watch?v=VIDEO_ID
 ```
-
 Hoặc dùng ngôn ngữ tự nhiên:
 - "Học sâu video này"
-- "Phân tích worldview"
-- "Belief archaeology [URL]"
-
-### Cấu hình
-
-Sửa `SKILL.md` để tùy chỉnh đường dẫn phù hợp với hệ thống của bạn:
-
-```yaml
-# Nơi lưu folder phân tích video
-storage_root: ~/youtube-learn/      # Đổi thành đường dẫn bạn muốn
-
-# File index knowledge base của bạn (cho bước Vault Check)
-knowledge_index: ~/knowledge/index.md  # Tùy chọn - bỏ qua Phase 5 nếu không có
-```
+- "Phân tích thế giới quan video [URL]"
+- "Chạy belief archaeology [URL]"
 
 ### Chạy Script độc lập
-
-Script lấy transcript hoạt động độc lập, không cần AI agent:
-
+Tải video/audio, transcript và tự động cắt frames không cần thông qua AI Agent:
 ```bash
-python scripts/fetch_transcript.py https://www.youtube.com/watch?v=VIDEO_ID output.txt
+python scripts/watch_video.py https://www.youtube.com/watch?v=VIDEO_ID output_directory
 ```
+
+Kiểm tra chất lượng và QA tệp tin đầu ra:
+```bash
+python scripts/verify_output.py output_directory --fix
+```
+
+---
 
 ## 🔬 Pipeline 8 Phase
 
 ```
-Phase 1: Thu thập dữ liệu      → Lấy transcript + metadata
-Phase 2: Chân dung Speaker      → Nghiên cứu người nói
+Phase 1: Thu thập dữ liệu      → Tải transcript + video + cắt 8-24 frames
+Phase 2: Chân dung Speaker      → Nghiên cứu người nói, cập nhật profile trung tâm ở speakers/
 Phase 3: Belief Archaeology     → Trích xuất tối đa 3 worldviews (⚡ CORE)
-Phase 4: Tổng hợp               → So sánh với mainstream, tìm mâu thuẫn
-Phase 5: Vault Check             → Đối chiếu với knowledge base hiện có
-Phase 6: Câu hỏi suy ngẫm       → 3 câu hỏi để internalize
-Phase 7: Atomize                 → Lưu trữ có cấu trúc
-Phase 8: QA Checklist            → 9 tiêu chí kiểm tra chất lượng
+Phase 4: Tổng hợp               → So sánh với mainstream, tìm mâu thuẫn ngầm (tension)
+Phase 5: Vault Check             → Đối chiếu với tri thức hiện có trong Second Brain
+Phase 6: Câu hỏi suy ngẫm       → 3 câu hỏi phản tư để người dùng chiêm nghiệm
+Phase 7: Lưu trữ (Atomize)      → Lưu trữ cấu trúc markdown, cập nhật _INDEX.md
+Phase 8: QA Checklist            → Chạy verify_output.py kiểm duyệt chất lượng nghiêm ngặt
 ```
-
-### Format output Phase 3 (Phần cốt lõi)
-
-Mỗi worldview được phân tích theo 5 chiều:
-
-| Chiều phân tích | Mô tả |
-|-----------------|-------|
-| 📍 Hiện tượng | Quote gốc + bối cảnh cụ thể |
-| 💡 Niềm tin ẩn | 1 câu dễ nhớ NHƯ TỤC NGỮ - không phải triết học |
-| ✅ Đúng khi | 2 ví dụ cụ thể ai cũng hiểu |
-| ❌ Sai khi | 1-2 trường hợp worldview này thất bại |
-| 🎯 Áp dụng cho tôi | 1 gợi ý actionable cụ thể nhất |
-
-## 📂 Cấu trúc output
-
-Mỗi video sau khi phân tích sẽ tạo 1 folder có cấu trúc:
-
-```
-youtube-learn/
-├── _INDEX.md                          ← Bản đồ tổng (tự động cập nhật)
-├── YYYY-MM-DD_ten-video/
-│   ├── analysis.md                    ← Bản phân tích đầy đủ 8 Phase
-│   ├── transcript.txt                 ← Transcript gốc (luôn giữ lại)
-│   ├── speaker.md                     ← Chân dung speaker
-│   └── worldviews/
-│       └── worldview-[ten].md         ← Mỗi worldview 1 file riêng
-```
-
-## 📋 Templates có sẵn
-
-Trong thư mục `references/`:
-
-- `speaker_profile_template.md` - Template chân dung speaker
-- `worldview_template.md` - Template phân tích worldview
-
-## 🛠️ Tùy chỉnh
-
-### Tương thích với mọi hệ thống quản lý kiến thức
-
-Skill được thiết kế để hoạt động với bất kỳ hệ thống nào (Obsidian, Notion, P.A.R.A, Zettelkasten...):
-
-1. **Storage root** - Đổi thư mục output trong `SKILL.md`
-2. **Vault Check** - Trỏ đến file knowledge index của bạn, hoặc tắt Phase 5
-3. **"Áp dụng cho tôi"** - Thay tên/bối cảnh của bạn vào Phase 3
-
-### Hỗ trợ ngôn ngữ
-
-Script lấy transcript ưu tiên theo thứ tự:
-1. Tiếng Việt (`vi`)
-2. Tiếng Anh (`en`)
-3. Ngôn ngữ bất kỳ có sẵn (fallback)
-
-Sửa thứ tự ưu tiên trong `scripts/fetch_transcript.py` nếu cần.
-
-## 📄 Giấy phép
-
-MIT License - xem file [LICENSE](LICENSE) để biết chi tiết.
-
-## 🙏 Credits
-
-- Lấy transcript bằng [youtube-transcript-api](https://github.com/jdepoix/youtube-transcript-api)
-- Phương pháp Belief Archaeology lấy cảm hứng từ hermeneutics (diễn giải học) và tư duy khảo cổ
-- Xây dựng cho nền tảng [Google Antigravity](https://blog.google/technology/google-deepmind/introducing-gemini-cli/) AI Agent
 
 ---
 
-**Made with 🏛️ by [Minh Đỗ](https://zalo.me/g/igkywu632)**
+## 📂 Cấu trúc Lưu trữ
+
+Mỗi video sau khi phân tích sẽ được lưu trữ gọn gàng theo chuẩn P.A.R.A:
+
+```
+youtube-learn/
+├── _INDEX.md                          ← Bản đồ tổng các video & worldviews
+├── speakers/
+│   └── thanh-tran-5-phut-ai.md        ← Profile trung tâm của từng speaker
+├── YYYY-MM-DD_ten-video/
+│   ├── analysis.md                    ← File phân tích chi tiết 8 Phase
+│   ├── transcript.txt                 ← Phụ đề/transcript gốc của video
+│   ├── frames/
+│   │   ├── frame_01.jpg               ← Ảnh cắt slide bài giảng
+│   │   └── ...
+│   └── worldviews/
+│       └── worldview-[ten].md         ← Mỗi worldview lưu 1 file riêng biệt
+```
+
+---
+
+## 📋 Templates có sẵn
+Các mẫu tài liệu chuẩn hóa nằm trong thư mục `references/`:
+- `speaker_profile_template.md` - Mẫu chân dung người chia sẻ.
+- `worldview_template.md` - Mẫu phân tích thế giới quan 5 chiều (Hiện tượng, Niềm tin ẩn, Đúng khi, Sai khi, Áp dụng cho tôi).
+
+---
+
+## 📄 Giấy phép
+MIT License - xem file [LICENSE](LICENSE) để biết chi tiết.
+
+## 🙏 Lời cảm ơn
+- Tải transcript bằng [youtube-transcript-api](https://github.com/jdepoix/youtube-transcript-api) và [yt-dlp](https://github.com/yt-dlp/yt-dlp).
+- Xây dựng tối ưu cho nền tảng [Google Antigravity](https://blog.google/technology/google-deepmind/introducing-gemini-cli/) AI Agent.
+
+---
+
+**Cung cấp bởi 🏛️ [Minh Đỗ](https://zalo.me/g/igkywu632)**
