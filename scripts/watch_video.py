@@ -4,7 +4,14 @@ import re
 import json
 import subprocess
 import shutil
+import time
 from pathlib import Path
+
+import requests
+
+
+ATLAS_API_BASE = "https://api.atlascloud.ai/api/v1"
+ATLAS_ASR_MODEL = "bytedance/seed-asr-2.0"
 
 # Cấu hình encoding utf-8 cho console để hiển thị tiếng Việt trên Windows
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -14,7 +21,8 @@ def get_env_key():
     keys = {
         'kyma': os.environ.get('KYMA_API_KEY'),
         'groq': os.environ.get('GROQ_API_KEY'),
-        'gemini': os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_AI_KEY')
+        'gemini': os.environ.get('GEMINI_API_KEY') or os.environ.get('GOOGLE_AI_KEY'),
+        'atlas': os.environ.get('ATLASCLOUD_API_KEY')
     }
     return keys
 
@@ -191,13 +199,93 @@ def extract_frames(video_path, duration, output_dir, count=8):
     print(f"Đã trích xuất thành công {len(extracted_files)} frames ảnh vào thư mục {frames_dir}")
     return extracted_files
 
+def _atlas_response_data(response):
+    response.raise_for_status()
+    payload = response.json()
+    return payload.get('data', payload)
+
+
+def poll_atlas_transcription(request_id, api_key, max_polls=100, max_get_retries=3):
+    """Poll an Atlas prediction, with bounded retries for transient GET failures."""
+    headers = {"Authorization": f"Bearer {api_key}"}
+    prediction_url = f"{ATLAS_API_BASE}/model/prediction/{request_id}"
+    transient_failures = 0
+
+    for _ in range(max_polls):
+        try:
+            response = requests.get(prediction_url, headers=headers, timeout=30)
+        except requests.RequestException:
+            transient_failures += 1
+            if transient_failures > max_get_retries:
+                raise
+            time.sleep(2)
+            continue
+
+        if response.status_code == 429 or response.status_code >= 500:
+            transient_failures += 1
+            if transient_failures > max_get_retries:
+                response.raise_for_status()
+            time.sleep(2)
+            continue
+
+        data = _atlas_response_data(response)
+        transient_failures = 0
+        status = data.get('status')
+        if status in ('completed', 'succeeded'):
+            text = (data.get('stt_result') or {}).get('text')
+            outputs = data.get('outputs') or []
+            if not text and outputs:
+                text = outputs[0]
+            if not text:
+                raise RuntimeError("Atlas ASR completed without transcript text.")
+            return text
+        if status == 'failed':
+            raise RuntimeError(f"Atlas ASR failed: {data.get('error', 'unknown error')}")
+        time.sleep(2)
+
+    raise TimeoutError("Atlas ASR timed out while polling the prediction.")
+
+
+def transcribe_audio_atlas(audio_path, api_key):
+    """Upload local audio and submit exactly one Atlas ASR generation request."""
+    headers = {"Authorization": f"Bearer {api_key}"}
+    with open(audio_path, 'rb') as audio_file:
+        upload_response = requests.post(
+            f"{ATLAS_API_BASE}/model/uploadMedia",
+            headers=headers,
+            files={'file': (os.path.basename(audio_path), audio_file)},
+            timeout=60,
+        )
+    upload_data = _atlas_response_data(upload_response)
+    audio_url = upload_data.get('download_url')
+    if not audio_url:
+        raise RuntimeError("Atlas upload completed without a download URL.")
+
+    format_name = Path(audio_path).suffix.lower().lstrip('.') or 'mp3'
+    generation_response = requests.post(
+        f"{ATLAS_API_BASE}/model/generateAudio",
+        headers={**headers, 'Content-Type': 'application/json'},
+        json={
+            'model': ATLAS_ASR_MODEL,
+            'audio_url': audio_url,
+            'format': format_name,
+            'enable_itn': True,
+            'enable_punc': True,
+        },
+        timeout=50,
+    )
+    generation_data = _atlas_response_data(generation_response)
+    request_id = generation_data.get('id')
+    if not request_id:
+        raise RuntimeError("Atlas ASR submission completed without a prediction ID.")
+    return poll_atlas_transcription(request_id, api_key)
+
+
 def transcribe_audio_api(audio_path, keys):
     """Dịch âm thanh thành văn bản qua các API dịch vụ."""
     if not audio_path or not os.path.exists(audio_path):
         return None, "Không tìm thấy file âm thanh để transcribe."
         
-    import requests
-    
     # 1. Thử Kyma API
     if keys['kyma']:
         print("Đang dịch âm thanh bằng Kyma API...")
@@ -262,6 +350,14 @@ def transcribe_audio_api(audio_path, keys):
             return response.text, None
         except Exception as e:
             print(f"Lỗi khi gọi Gemini API: {e}")
+
+    # 4. Atlas Cloud is opt-in and preserves the existing provider order.
+    if keys['atlas']:
+        print("Đang dịch âm thanh bằng Atlas Cloud Seed ASR 2.0...")
+        try:
+            return transcribe_audio_atlas(audio_path, keys['atlas']), None
+        except Exception as e:
+            print(f"Lỗi khi gọi Atlas Cloud API: {e}")
             
     return None, "Không có API key hợp lệ hoặc tất cả dịch vụ API đều gặp lỗi."
 
