@@ -50,6 +50,20 @@ cp -r youtube-learn-skill ~/.gemini/antigravity/skills/youtube-learn
 pip install -r resources/requirements.txt
 ```
 
+### 4. Chọn dịch vụ Speech-to-Text
+Script giữ nguyên thứ tự provider hiện có: Kyma, Groq và Gemini. Atlas Cloud là
+provider tùy chọn cuối cùng, chỉ được dùng khi các provider trước không được cấu
+hình hoặc không trả về transcript:
+
+```bash
+export ATLASCLOUD_API_KEY="your-api-key"
+python scripts/watch_video.py https://www.youtube.com/watch?v=VIDEO_ID output_directory
+```
+
+Atlas Cloud sử dụng model `bytedance/seed-asr-2.0`. Script tải audio tạm thời lên
+Atlas, gửi đúng một yêu cầu ASR và chỉ retry hữu hạn khi GET trạng thái prediction
+gặp lỗi tạm thời. YouTube Transcript API vẫn là fallback miễn phí sau các provider.
+
 ---
 
 ## 🚀 Cách sử dụng
@@ -125,6 +139,7 @@ MIT License - xem file [LICENSE](LICENSE) để biết chi tiết.
 
 ## 🙏 Lời cảm ơn
 - Tải transcript bằng [youtube-transcript-api](https://github.com/jdepoix/youtube-transcript-api) và [yt-dlp](https://github.com/yt-dlp/yt-dlp).
+- Có thể dùng Atlas Cloud Seed ASR 2.0 làm provider Speech-to-Text tùy chọn.
 - Xây dựng tối ưu cho nền tảng [Google Antigravity](https://blog.google/technology/google-deepmind/introducing-gemini-cli/) AI Agent.
 
 ---

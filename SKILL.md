@@ -19,7 +19,7 @@ updated: 2026-07-04
 - `yt-dlp` (pip install yt-dlp)
 - `youtube-transcript-api` (pip install youtube-transcript-api)
 - Script: `scripts/watch_video.py`
-- Yêu cầu API Key: `KYMA_API_KEY`, `GROQ_API_KEY` hoặc `GEMINI_API_KEY` (để dịch giọng nói thành văn bản cho các video ngoài YouTube).
+- Yêu cầu một API Key: `KYMA_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY` hoặc `ATLASCLOUD_API_KEY` (để dịch giọng nói thành văn bản cho các video ngoài YouTube). Atlas Cloud là provider tùy chọn cuối cùng và không thay đổi thứ tự provider mặc định.
 
 ## When to Use
 User chia sẻ link video (YouTube, LinkedIn, Facebook, X, TikTok, Reddit...) và muốn phân tích sâu.
@@ -40,7 +40,7 @@ User chia sẻ link video (YouTube, LinkedIn, Facebook, X, TikTok, Reddit...) v�
      - Sàn tối thiểu: 8 frames (video ngắn dưới 10 phút)
      - Trần tối đa: 24 frames (video dài trên 30 phút)
      - Ví dụ: 20 phút → 16 frames | 30 phút → 24 frames | 60 phút → 24 frames
-   - Dùng mô hình Speech-to-Text (Kyma / Groq / Gemini) dịch âm thanh thành transcript. Tự động fallback về `youtube-transcript-api` nếu là YouTube để đảm bảo luôn có transcript.
+   - Dùng mô hình Speech-to-Text (Kyma / Groq / Gemini, hoặc Atlas Cloud Seed ASR 2.0 khi cấu hình `ATLASCLOUD_API_KEY`) dịch âm thanh thành transcript. Atlas chỉ gửi một yêu cầu ASR cho mỗi lần chạy và giới hạn retry ở bước GET prediction. Tự động fallback về `youtube-transcript-api` nếu là YouTube để đảm bảo luôn có transcript.
 4. Đọc file `<video_folder>/transcript.txt` bằng `view_file` để phân tích văn bản.
 5. Kiểm tra xem thư mục `<video_folder>/frames/` có được tạo ra không. Nếu có, hãy dùng `view_file` để xem các ảnh khung hình này để phân tích các yếu tố trực quan (slide, sơ đồ, code, giao diện).
 
